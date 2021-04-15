@@ -157,3 +157,10 @@ You can either run the `app.py` directly with Python3 or in a docker container.
     ```
 
 2. Run the client in python. See `client.py` for the full code.
+
+## Contact
+
+Feel free to contact me.
+
+* [Taewoon Kim](https://tae898.github.io/).
+
