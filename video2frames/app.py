@@ -3,8 +3,6 @@ import jsonpickle
 import logging
 import av
 
-# logging.basicConfig(level=logging.DEBUG)
-
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
@@ -36,7 +34,6 @@ def extract_frames():
 
     app.logger.info(f"Every {every_N} th frame will be processed.")
 
-
     frames = []
     indexes = []
     for idx, frame in enumerate(container.decode(video=0)):
@@ -66,9 +63,9 @@ def extract_frames():
 
     metadata['duration_seconds'] = duration_seconds
     metadata['fps_original'] = fps_original
-    metadata['fps'] = len(frames) / duration_seconds 
-    
-    metadata['width_original'] = width_original 
+    metadata['fps'] = len(frames) / duration_seconds
+
+    metadata['width_original'] = width_original
     metadata['height_original'] = height_original
     metadata['width'], metadata['height'] = image.size
 
@@ -79,13 +76,6 @@ def extract_frames():
     response_pickled = jsonpickle.encode(response)
 
     return response_pickled
-
-
-def get_target_width_height(width_original, height_original, width_max,
-                            height_max):
-
-    if width_original < width_max and height_original < height_max:
-        return width_original, height_original
 
 
 if __name__ == '__main__':

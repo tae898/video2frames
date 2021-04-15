@@ -4,6 +4,7 @@ import jsonpickle
 import logging
 import json
 import os
+from tqdm import tqdm
 from PIL import Image
 
 logging.basicConfig(
@@ -30,7 +31,7 @@ def main(url, video_path, width_max, height_max, fps_max, save_dir):
 
     assert len(frames) == len(metadata['frame_idx_original'])
 
-    for frame, idx in zip(frames, metadata['frame_idx_original']):
+    for frame, idx in tqdm(zip(frames, metadata['frame_idx_original'])):
         fp = os.path.join(save_dir, os.path.basename(
             video_path)) + f".{str(idx).zfill(5)}.jpg"
         frame.save(fp)
