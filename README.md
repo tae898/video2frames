@@ -2,6 +2,8 @@
 
 This repo has two server-client pairs. The servers are dockerized flask api.
 
+[Watch a demo video](https://youtu.be/dnmE42q61VY).
+
 1. **video2frames**
 
     Client: Sends binary video (e.g. mp4 encoded) data to the server.
