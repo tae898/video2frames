@@ -1,7 +1,8 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import jsonpickle
 import logging
 import av
+import io
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -14,17 +15,25 @@ app = Flask(__name__)
 
 @app.route("/extract-frames", methods=["POST"])
 def extract_frames():
-    files = request.files['video']
-    app.logger.info(f"{files} received")
+    """
+    Receive everything in json!!!
 
-    data = request.form.to_dict()
-    app.logger.info(f"{data} received")
+    """
+    app.logger.debug(f"Receiving data ...")
+    data = request.json
+    data = jsonpickle.decode(data)
 
-    height_max = int(data['height_max'])
-    width_max = int(data['width_max'])
-    fps_max = float(data['fps_max'])
+    video = data['video']
+    fps_max = data['fps_max']
+    width_max = data['width_max']
+    height_max = data['height_max']
 
-    container = av.open(files)
+    app.logger.debug(f"fps_max: {fps_max}, width_max: {width_max}, "
+                     f"height_max: {height_max}")
+
+    video = io.BytesIO(video)
+
+    container = av.open(video)
     app.logger.info(f"{container} opened")
 
     metadata = {}
@@ -70,6 +79,8 @@ def extract_frames():
     metadata['width'], metadata['height'] = image.size
 
     metadata['frame_idx_original'] = indexes
+
+    app.logger.info(f"metadata: {metadata}")
 
     response = {'frames': frames,
                 'metadata': metadata}

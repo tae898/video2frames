@@ -16,9 +16,16 @@ logging.basicConfig(
 
 def main(url, video_path, width_max, height_max, fps_max, save_dir):
     os.makedirs(save_dir, exist_ok=True)
-    files = {'video': open(video_path, 'rb')}
-    data = {'fps_max': fps_max, 'width_max': width_max, 'height_max': height_max}
-    response = requests.post(url, files=files, data=data)
+
+    with open(video_path, 'rb') as stream:
+        binary_video = stream.read()
+
+    data = {'fps_max': fps_max,
+            'width_max': width_max,
+            'height_max': height_max,
+            'video': binary_video}
+    data = jsonpickle.encode(data)
+    response = requests.post(url, json=data)
     response = jsonpickle.decode(response.text)
 
     frames = response['frames']
