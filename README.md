@@ -122,6 +122,13 @@ You can either run the `app.py` directly with Python3 or in a docker container.
 - Run on CPU
 
   1. Go to the insightface directory (i.e. `cd insightface`)
+  
+  1. Download the models and unzip it. 
+        ```bash
+        wget https://github.com/tae898/insightface/releases/download/models/models.zip
+
+        unzip models.zip
+        ```
 
   2. Build the container.
       ```bash
