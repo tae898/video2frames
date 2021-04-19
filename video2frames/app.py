@@ -13,7 +13,7 @@ logging.basicConfig(
 app = Flask(__name__)
 
 
-@app.route("/extract-frames", methods=["POST"])
+@app.route("/", methods=["POST"])
 def extract_frames():
     """
     Receive everything in json!!!
