@@ -6,6 +6,7 @@ import json
 import os
 from tqdm import tqdm
 from PIL import Image
+import io
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -38,7 +39,11 @@ def main(url, video_path, width_max, height_max, fps_max, save_dir):
 
     assert len(frames) == len(metadata['frame_idx_original'])
 
+    logging.info(f"decompressing frames ...")
     for frame, idx in tqdm(zip(frames, metadata['frame_idx_original'])):
+        frame = io.BytesIO(frame)
+        frame = Image.open(frame)
+
         fp = os.path.join(save_dir, os.path.basename(
             video_path)) + f".{str(idx).zfill(5)}.jpg"
         frame.save(fp)

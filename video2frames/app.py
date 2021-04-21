@@ -3,6 +3,11 @@ import jsonpickle
 import logging
 import av
 import io
+import os
+import datetime
+import shutil
+from PIL import Image
+from tqdm import tqdm
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -19,6 +24,11 @@ def extract_frames():
     Receive everything in json!!!
 
     """
+    app.logger.debug(f"Creating a directory TEMP ...")
+    shutil.rmtree('./TEMP/', ignore_errors=True)
+    os.makedirs('./TEMP/')
+    CURRENT_TIME = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
     app.logger.debug(f"Receiving data ...")
     data = request.json
     data = jsonpickle.decode(data)
@@ -48,6 +58,7 @@ def extract_frames():
     for idx, frame in enumerate(container.decode(video=0)):
         if idx % every_N != 0:
             continue
+        frame_save_path = f"./TEMP/{CURRENT_TIME}-{idx}.jpg"
 
         indexes.append(idx)
         app.logger.info(f"processing {idx} th frame ...")
@@ -57,10 +68,13 @@ def extract_frames():
 
         width_original, height_original = image.size
         image.thumbnail(size=(width_max, height_max))
-
         app.logger.info(f"resized to {image.size}")
 
-        frames.append(image)
+        frames.append(frame_save_path)
+        app.logger.debug(f"saving the frame at {frame_save_path} "
+                         f"temporarily before sending ...")
+        image.save(frame_save_path)
+
     container.close()
 
     num_frames_original = idx + 1
@@ -82,7 +96,13 @@ def extract_frames():
 
     app.logger.info(f"metadata: {metadata}")
 
-    response = {'frames': frames,
+    app.logger.debug(f"Adding compressed frames ...")
+    frames_binary = []
+    for frame_save_path in tqdm(frames):
+        with open(frame_save_path, 'rb') as stream:
+            frames_binary.append(stream.read())
+
+    response = {'frames': frames_binary,
                 'metadata': metadata}
     response_pickled = jsonpickle.encode(response)
 
