@@ -16,6 +16,7 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
+shutil.rmtree('./TEMP/', ignore_errors=True)
 
 
 @app.route("/", methods=["POST"])
@@ -25,7 +26,6 @@ def extract_frames():
 
     """
     app.logger.debug(f"Creating a directory TEMP ...")
-    shutil.rmtree('./TEMP/', ignore_errors=True)
     os.makedirs('./TEMP/')
     CURRENT_TIME = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
@@ -105,6 +105,8 @@ def extract_frames():
     response = {'frames': frames_binary,
                 'metadata': metadata}
     response_pickled = jsonpickle.encode(response)
+
+    shutil.rmtree('./TEMP/')
 
     return response_pickled
 
