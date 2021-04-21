@@ -26,7 +26,7 @@ def extract_frames():
 
     """
     app.logger.debug(f"Creating a directory TEMP ...")
-    os.makedirs('./TEMP/')
+    os.makedirs('./TEMP/', exist_ok=True)
     CURRENT_TIME = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     app.logger.debug(f"Receiving data ...")
@@ -106,7 +106,7 @@ def extract_frames():
                 'metadata': metadata}
     response_pickled = jsonpickle.encode(response)
 
-    shutil.rmtree('./TEMP/')
+    shutil.rmtree('./TEMP/', ignore_errors=True)
 
     return response_pickled
 
