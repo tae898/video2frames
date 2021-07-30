@@ -1,12 +1,12 @@
-from flask import Flask, request, jsonify
-import jsonpickle
-import logging
-import av
 import io
+import logging
 import os
-import datetime
 import shutil
-from PIL import Image
+from tempfile import TemporaryDirectory
+
+import av
+import jsonpickle
+from flask import Flask, request
 from tqdm import tqdm
 
 logging.basicConfig(
@@ -25,10 +25,6 @@ def extract_frames():
     Receive everything in json!!!
 
     """
-    app.logger.debug(f"Creating a directory TEMP ...")
-    os.makedirs('./TEMP/', exist_ok=True)
-    CURRENT_TIME = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-
     app.logger.debug(f"Receiving data ...")
     data = request.json
     data = jsonpickle.decode(data)
@@ -53,60 +49,61 @@ def extract_frames():
 
     app.logger.info(f"Every {every_N} th frame will be processed.")
 
-    frames = []
-    indexes = []
-    for idx, frame in enumerate(container.decode(video=0)):
-        if idx % every_N != 0:
-            continue
-        frame_save_path = f"./TEMP/{CURRENT_TIME}-{idx}.jpg"
+    with TemporaryDirectory() as tmpdir:
+        app.logger.debug("Using temp directory %s", tmpdir)
 
-        indexes.append(idx)
-        app.logger.info(f"processing {idx} th frame ...")
+        frames = []
+        indexes = []
+        for idx, frame in enumerate(container.decode(video=0)):
+            if idx % every_N != 0:
+                continue
+            frame_save_path = os.path.join(tmpdir, f"{idx}.jpg")
 
-        image = frame.to_image()
-        app.logger.info(f"original width height {image.size}")
+            indexes.append(idx)
+            app.logger.info(f"processing {idx} th frame ...")
 
-        width_original, height_original = image.size
-        image.thumbnail(size=(width_max, height_max))
-        app.logger.info(f"resized to {image.size}")
+            image = frame.to_image()
+            app.logger.info(f"original width height {image.size}")
 
-        frames.append(frame_save_path)
-        app.logger.debug(f"saving the frame at {frame_save_path} "
-                         f"temporarily before sending ...")
-        image.save(frame_save_path)
+            width_original, height_original = image.size
+            image.thumbnail(size=(width_max, height_max))
+            app.logger.info(f"resized to {image.size}")
 
-    container.close()
+            frames.append(frame_save_path)
+            app.logger.debug(f"saving the frame at {frame_save_path} "
+                             f"temporarily before sending ...")
+            image.save(frame_save_path)
 
-    num_frames_original = idx + 1
-    num_frames = len(frames)
-    duration_seconds = num_frames_original / fps_original
+        container.close()
 
-    metadata['num_frames_original'] = num_frames_original
-    metadata['num_frames'] = num_frames
+        num_frames_original = idx + 1
+        num_frames = len(frames)
+        duration_seconds = num_frames_original / fps_original
 
-    metadata['duration_seconds'] = duration_seconds
-    metadata['fps_original'] = fps_original
-    metadata['fps'] = len(frames) / duration_seconds
+        metadata['num_frames_original'] = num_frames_original
+        metadata['num_frames'] = num_frames
 
-    metadata['width_original'] = width_original
-    metadata['height_original'] = height_original
-    metadata['width'], metadata['height'] = image.size
+        metadata['duration_seconds'] = duration_seconds
+        metadata['fps_original'] = fps_original
+        metadata['fps'] = len(frames) / duration_seconds
 
-    metadata['frame_idx_original'] = indexes
+        metadata['width_original'] = width_original
+        metadata['height_original'] = height_original
+        metadata['width'], metadata['height'] = image.size
 
-    app.logger.info(f"metadata: {metadata}")
+        metadata['frame_idx_original'] = indexes
 
-    app.logger.debug(f"Adding compressed frames ...")
-    frames_binary = []
-    for frame_save_path in tqdm(frames):
-        with open(frame_save_path, 'rb') as stream:
-            frames_binary.append(stream.read())
+        app.logger.info(f"metadata: {metadata}")
 
-    response = {'frames': frames_binary,
-                'metadata': metadata}
-    response_pickled = jsonpickle.encode(response)
+        app.logger.debug(f"Adding compressed frames ...")
+        frames_binary = []
+        for frame_save_path in tqdm(frames):
+            with open(frame_save_path, 'rb') as stream:
+                frames_binary.append(stream.read())
 
-    shutil.rmtree('./TEMP/', ignore_errors=True)
+        response = {'frames': frames_binary,
+                    'metadata': metadata}
+        response_pickled = jsonpickle.encode(response)
 
     return response_pickled
 
