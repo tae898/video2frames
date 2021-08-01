@@ -1,0 +1,23 @@
+{
+    "num_frames_original": 555,
+    "num_frames": 10,
+    "duration_seconds": 9.25,
+    "fps_original": 60.0,
+    "fps": 1.0810810810810811,
+    "width_original": 1280,
+    "height_original": 720,
+    "width": 1280,
+    "height": 720,
+    "frame_idx_original": [
+        0,
+        60,
+        120,
+        180,
+        240,
+        300,
+        360,
+        420,
+        480,
+        540
+    ]
+}

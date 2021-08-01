@@ -54,7 +54,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='send a video to the client and get back the frames.')
     parser.add_argument('--url', type=str,
-                        default='http://127.0.0.1:10001/')
+                        default='http://172.17.0.2:10001/')
     parser.add_argument('--video-path', type=str)
     parser.add_argument('--width-max', type=int, default=1280)
     parser.add_argument('--height-max', type=int, default=720)
