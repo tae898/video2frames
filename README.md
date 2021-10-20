@@ -11,7 +11,7 @@ This repo includes a light-weight Flask API server that receives a binary video 
 
 1. Pull the image and run the container.
     ```bash
-    docker run -it --rm -p 10001:10001 tae898/video2frames:latest
+    docker run -it --rm -p 10001:10001 tae898/video2frames:v0.1
     ```
 
 1. Build the image (optional).
