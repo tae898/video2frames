@@ -1,6 +1,6 @@
 # video2frames
 
-This repo includes a light-weight Flask API server that receives a binary video (e.g. mp4) and returns JPEG-encoded frames.
+This repo includes a light-weight Flask API server that receives a binary video (e.g., mp4) and returns JPEG-encoded frames.
 
 [Watch a demo video](https://youtu.be/dnmE42q61VY).
 
