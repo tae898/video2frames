@@ -1,7 +1,5 @@
 # video2frames
 
-[![DOI](https://zenodo.org/badge/357800360.svg)](https://zenodo.org/badge/latestdoi/357800360)
-
 This repo includes a light-weight Flask API server that receives a binary video (e.g., mp4) and returns JPEG-encoded frames.
 
 [Watch a demo video](https://youtu.be/dnmE42q61VY).
@@ -73,6 +71,10 @@ Let's test the flask api server if it's running okay.
 ## Troubleshooting
 
 The best way to find and solve your problems is to see in the github issue tab. If you can't find what you want, feel free to raise an issue. We are pretty responsive.
+
+## Cite our work
+
+[![DOI](https://zenodo.org/badge/357800360.svg)](https://zenodo.org/badge/latestdoi/357800360)
 
 ## Contributing
 
